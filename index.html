@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chip8js</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas></canvas>
+
+    <script src="./src/keyboard.js"></script>
+    <script src="./src/display.js"></script>
+    <script src="./src/cpu.js"></script>
+    <script src="./src/chip8.js"></script>
+    <script>
+        const chip8 = new Chip8();
+        const display = chip8.getDisplay();
+
+        const canvasScale = 20;
+        const ctx = document.querySelector("canvas").getContext("2d");
+        ctx.canvas.width = display.width * canvasScale;
+        ctx.canvas.height = display.height * canvasScale;
+
+        const clearCanvas = () => {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        }
+
+        const drawPixel = (x, y, color) => {
+            ctx.fillStyle = color;
+            ctx.fillRect(x*canvasScale, y*canvasScale, canvasScale, canvasScale);
+        }
+
+        display.pixelChanged = (x, y, active) => {
+            drawPixel(x, y, active ? "black" : "white");
+        }
+
+        fetch("games/PONG2")
+            .then(response => response.arrayBuffer())
+            .then(array => new Uint8Array(array))
+            .then(program => {
+                chip8.loadProgram(program);
+        });
+        chip8.run();
+    </script>
+</body>
+</html>
