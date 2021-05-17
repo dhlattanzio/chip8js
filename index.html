@@ -9,7 +9,11 @@
 </head>
 <body>
     <canvas></canvas>
+    <select name="games" id="games">
+        <option disabled selected>Select a game</option>
+    </select>
 
+    <script src="./src/audio.js"></script>
     <script src="./src/keyboard.js"></script>
     <script src="./src/display.js"></script>
     <script src="./src/cpu.js"></script>
@@ -35,14 +39,35 @@
         display.pixelChanged = (x, y, active) => {
             drawPixel(x, y, active ? "black" : "white");
         }
+        display.displayClear = () => {
+            clearCanvas();
+        }
 
-        fetch("games/PONG2")
-            .then(response => response.arrayBuffer())
-            .then(array => new Uint8Array(array))
-            .then(program => {
-                chip8.loadProgram(program);
+        const gamesList = ["15PUZZLE", "BLINKY", "BLITZ", "BRIX", "CONNECT4", "GUESS", "HIDDEN", "IBM", "INVADERS",
+        "KALEID", "MAZE", "MERLIN", "MISSILE", "PONG", "PONG2", "PUZZLE", "SYZYGY", "TANK", "TETRIS",
+        "TICTAC", "UFO", "VBRIX", "VERS", "WIPEOFF"]
+
+        const gameSelector = document.querySelector("#games");
+        for(const game of gamesList) {
+            const gameOption = document.createElement("option");
+            gameOption.setAttribute("name", game);
+            gameOption.innerHTML += game;
+            gameSelector.appendChild(gameOption);
+        }
+
+        gameSelector.addEventListener("change", event => {
+            gameSelector.blur();
+            document.querySelector("canvas").focus();
+            chip8.stop();
+
+            fetch("games/"+event.target.value)
+                .then(response => response.arrayBuffer())
+                .then(array => new Uint8Array(array))
+                .then(program => {
+                    chip8.loadProgram(program);
+                    chip8.run();
+            });
         });
-        chip8.run();
     </script>
 </body>
 </html>

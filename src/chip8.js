@@ -13,6 +13,9 @@ class Chip8 {
     }
 
     loadProgram = (program) => {
+        if (this.cpu.audio == null) {
+            this.cpu.setAudio(new Audio());
+        }
         this.reset();
         this.cpu.loadProgram(program);
     }

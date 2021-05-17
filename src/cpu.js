@@ -33,6 +33,7 @@ class Cpu {
 
         this.display = null;
         this.keyboard = null;
+        this.audio = null;
         this.keystatus = new Array().fill(false);
 
         // load sprites in memory
@@ -48,6 +49,10 @@ class Cpu {
     setKeyboard = (keyboard) => {
         this.keyboard = keyboard;
         this.keyboard.listener = this.onKeyEvent;
+    }
+
+    setAudio = (audio) => {
+        this.audio = audio;
     }
 
     onKeyEvent = (keycode, pressed) => {
@@ -91,10 +96,16 @@ class Cpu {
         this.st = 0;
         this.paused = -1;
         this.keystatus.fill(false);
+        this.display.clear();
+        this.stopTone();
     }
 
     tone = () => {
-        // TODO!
+        this.audio.play();
+    }
+
+    stopTone = () => {
+        this.audio.stop();
     }
 
     perform = (opcode) => {
@@ -290,7 +301,10 @@ class Cpu {
     }
 
     update = () => {
-        if (this.paused >= 0) return;
+        if (this.paused >= 0) {
+            this.stopTone()
+            return;
+        }
 
         if (this.dt > 0) {
             this.dt--;
@@ -298,6 +312,8 @@ class Cpu {
         if (this.st > 0) {
             this.st--;
             this.tone();
+        } else {
+            this.stopTone()
         }
 
         for(let i=0;i<this.speed;i++) {

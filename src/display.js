@@ -3,12 +3,14 @@ class Display {
         this.width = width;
         this.height = height;
         this.pixels = new Array(width * height);
+        this.displayClear = () => {};
         this.pixelChanged = (x, y, active) => {};
         this.clear();
     }
 
     clear() {
         this.pixels.fill(0);
+        this.displayClear();
     }
 
     draw(sprite, x, y) {
